@@ -18,18 +18,26 @@ def solve_sat(clauses):
 
 
 def solve_max_sat(clauses):
+    nr_clauses = 0
     wcnf = WCNF()
     for c in clauses:
         wcnf.append(c, weight=1)
+        nr_clauses += 1
 
     with RC2(wcnf) as rc2:
-        # rc2.compute()
-        print(f"MaxSAT solver result: {rc2.compute()}")
+        rc2.compute()
+        max_clauses = nr_clauses - rc2.cost
+
+        for m in rc2.enumerate():
+            if max_clauses == nr_clauses - rc2.cost:
+                print(f"Found model: {m} Satisfied clauses {nr_clauses - rc2.cost}")
+            else:
+                break
 
 
 if __name__ == '__main__':
     # solve_sat(unsatisfying_clauses)
     # solve_sat(satisfying_clauses)
 
-    solve_max_sat(unsatisfying_clauses)
+    # solve_max_sat(unsatisfying_clauses)
     solve_max_sat(satisfying_clauses)
