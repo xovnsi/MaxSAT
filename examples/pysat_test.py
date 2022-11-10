@@ -1,5 +1,7 @@
 from pysat.examples.rc2 import RC2
 from pysat.formula import WCNF
+from DataModel.Generator import Generator
+import numpy as np
 
 unsatisfying_clauses = [[1, 2], [-1, 2], [1, -2], [-1, -2]]
 satisfying_clauses = [[1, 2], [-1, 2]]
@@ -63,5 +65,12 @@ if __name__ == '__main__':
     # solve_max_sat(unsatisfying_clauses)
     # solve_max_sat(satisfying_clauses)
 
-    solve_weighted_max_sat(unsatisfying_clauses, weights_1)
+    # solve_weighted_max_sat(unsatisfying_clauses, weights_1)
     # solve_max_sat(satisfying_clauses)
+
+    areas, parking_lots = Generator.generate_areas(5, 8, 5*8*3)
+    for area in areas:
+        print(area)
+    print()
+    for parking_lot in parking_lots:
+        print(parking_lot)
