@@ -9,8 +9,9 @@ class ParkingLot:
     guarded: bool
     p_and_r: bool
     underground: bool
+    disabled: bool
 
-    def __init__(self, number, free_lots, paid, guarded, p_and_r, underground):
+    def __init__(self, number, free_lots, paid, guarded, p_and_r, underground, disabled):
 
         self.number = number
         self.free_lots = free_lots
@@ -18,10 +19,11 @@ class ParkingLot:
         self.guarded = guarded
         self.p_and_r = p_and_r
         self.underground = underground
+        self.disabled = disabled
 
     def __str__(self):
 
         return f"{self.number = }, {self.free_lots = }, {self.paid = }, {self.guarded = }, {self.p_and_r = }, " \
-               f"{self.underground = }"
+               f"{self.underground = }, {self.disabled = }"
 
 

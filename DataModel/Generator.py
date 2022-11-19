@@ -45,7 +45,7 @@ class Generator:
             random_area = np.random.randint(0, x*y, dtype=np.int16)
             areas[random_area].parking_lots = np.append(areas[random_area].parking_lots, parking_lot)
 
-        # Generator.save_to_file(parking_lots, areas)
+        Generator.save_to_file(parking_lots, areas)
 
         return areas, parking_lots
 
@@ -66,10 +66,12 @@ class Generator:
         return parking_lots
 
     @staticmethod
-    def save_to_file(lots_: np.array, areas_: np.array):
+    def save_to_file(lots_: np.array((int,), dtype=np.dtype(ParkingLot)),
+                     areas_: np.array((int,), dtype=np.dtype(Area))):
+
         f = open("../Data/Lots.txt", "w")
         for lot in lots_:
-            f.write(str(lot) + '\n')
+            f.write(lot + '\n')
         f.close()
 
         f = open("../Data/Areas.txt", "w")
