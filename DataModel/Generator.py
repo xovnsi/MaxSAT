@@ -6,12 +6,12 @@ from DataModel.ParkingLot import ParkingLot
 class Generator:
 
     @staticmethod
-    def generate_areas(x: int, y: int, parking_num: int) -> np.array:
+    def generate_areas(x: int, y: int, mean_parking_lots: float) -> np.array:
 
         num = 0
         areas = np.empty((x, y), dtype=np.dtype(Area))
-        attr = np.random.randint(10, size=(x, y))
-        in_need = np.random.randint(10, size=(x, y))
+        attr = np.random.randint(11, size=(x, y))
+        in_need = np.random.randint(11, size=(x, y))
 
         for i in range(x):
             for j in range(y):
@@ -38,12 +38,12 @@ class Generator:
                 if i > 0 and j > 0:
                     areas[i][j].add_neighbour(areas[i - 1][j - 1])
 
-        parking_lots = Generator.generate_parking_lots(parking_num)
+        parking_lots = Generator.generate_parking_lots(int(mean_parking_lots * x * y))
         areas = areas.flatten()
 
         for parking_lot in parking_lots:
             random_area = np.random.randint(0, x*y, dtype=np.int16)
-            areas[random_area].parking_lots = np.append(areas[random_area].parking_lots, parking_lot)
+            areas[random_area].parking_lots = np.append(areas[random_area].parking_lots, parking_lot.number)
 
         Generator.save_to_file(parking_lots, areas)
 
@@ -52,15 +52,20 @@ class Generator:
     @staticmethod
     def generate_parking_lots(num: int) -> np.array:
 
-        free_lots = np.random.randint(50, size=(num,))
+        free_lots = np.random.randint(51, size=(num,))
         paid = np.random.randint(2, size=(num,), dtype=np.bool)
         guarded = np.random.randint(2, size=(num,), dtype=np.bool)
         p_and_r = np.random.randint(2, size=(num,), dtype=np.bool)
         underground = np.random.randint(2, size=(num,), dtype=np.bool)
         parking_lots = np.empty((num,), dtype=np.dtype(ParkingLot))
+        disabled = np.empty((num,), dtype=np.dtype(ParkingLot))
 
         for i in range(num):
-            parking_lot = ParkingLot(i, free_lots[i], paid[i], guarded[i], p_and_r[i], underground[i])
+            if guarded[i] == 0:
+                paid[i] = 0
+
+        for i in range(num):
+            parking_lot = ParkingLot(i, free_lots[i], paid[i], guarded[i], p_and_r[i], underground[i], disabled)
             parking_lots[i] = parking_lot
 
         return parking_lots
@@ -71,7 +76,7 @@ class Generator:
 
         f = open("../Data/Lots.txt", "w")
         for lot in lots_:
-            f.write(lot + '\n')
+            f.write(str(lot) + '\n')
         f.close()
 
         f = open("../Data/Areas.txt", "w")

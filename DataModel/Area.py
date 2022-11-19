@@ -22,8 +22,8 @@ class Area:
         self.y = y
         self.attractiveness = attractiveness
         self.in_need = in_need
-        self.neighbours = np.empty(6, dtype=np.dtype(object))
-        self.parking_lots = np.empty(0, dtype=np.dtype(object))
+        self.neighbours = np.ones(6, dtype=np.int16) * -1
+        self.parking_lots = np.empty(0, dtype=np.int16)
 
     def add_neighbour(self, area):
         x = area.x - self.x
@@ -33,32 +33,33 @@ class Area:
             return
 
         if x == 0 and y == 1:
-            self.neighbours[0] = area
+            self.neighbours[0] = area.number
         elif x == 1 and y == 1:
-            self.neighbours[1] = area
+            self.neighbours[1] = area.number
         elif x == 1 and y == 0:
-            self.neighbours[2] = area
+            self.neighbours[2] = area.number
         elif x == 0 and y == -1:
-            self.neighbours[3] = area
+            self.neighbours[3] = area.number
         elif x == -1 and y == 0:
-            self.neighbours[4] = area
+            self.neighbours[4] = area.number
         elif x == -1 and y == 1:
-            self.neighbours[5] = area
-
-    def add_parking_lot(self, parking_lot: ParkingLot):
-        self.parking_lots = np.append(self.parking_lots, parking_lot)
+            self.neighbours[5] = area.number
 
     def __str__(self):
         neighbours = ""
         for n in self.neighbours:
-            if n is not None:
-                neighbours += str(n.number)
+            if n != -1:
                 neighbours += " "
+                neighbours += str(n)
 
         parking_lots = ""
         for p in self.parking_lots:
-            parking_lots += str(p.number)
+            parking_lots += str(p)
             parking_lots += " "
 
         return f"{self.number = }, {self.x = }, {self.y = }, {self.attractiveness = }, {self.in_need = }, " \
-               f"neighbours = {neighbours}, parking lots = {parking_lots}"
+               f"neighbours ={neighbours}, parking lots = {parking_lots}"
+
+    def get_weight(self, is_chosen=False):
+        weight = self.in_need * 10 + self.attractiveness * 5
+        return weight

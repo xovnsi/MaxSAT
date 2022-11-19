@@ -1,3 +1,5 @@
+import numpy as np
+
 from DataModel.ParkingLot import ParkingLot
 from DataModel.Generator import Generator
 # from UserInput.MainSolver import MainSolver
@@ -6,6 +8,7 @@ from pysat.formula import WCNF
 
 
 class Features:
+    area: int
     free_lots: int
     paid: bool
     guarded: bool
@@ -13,7 +16,8 @@ class Features:
     underground: bool
     disabled: bool
 
-    def __init__(self, free_lots, paid, guarded, p_and_r, underground, disabled):
+    def __init__(self, area,  free_lots, paid, guarded, p_and_r, underground, disabled):
+        self.area = area
         self.free_lots = free_lots
         self.paid = paid
         self.guarded = guarded
@@ -23,14 +27,21 @@ class Features:
 
     @staticmethod
     def get_info():
-        free_lots = input("Do you want a parking with at least 10 free lots?")
-        paid = input("Do you want a paid parking?")
-        guarded = input("Do you want a guarded parking?")
-        p_and_r = input("Do you want a park&ride parking?")
-        underground = input("Do you want an underground parking?")
-        disabled = input("Do you want an disabled parking space?")
+        # free_lots = input("Do you want a parking with at least 10 free lots?")
+        # paid = input("Do you want a paid parking?")
+        # guarded = input("Do you want a guarded parking?")
+        # p_and_r = input("Do you want a park&ride parking?")
+        # underground = input("Do you want an underground parking?")
+        # disabled = input("Do you want a disabled parking space?")
+        area = 17
+        paid = False
+        guarded = True
+        p_and_r = False
+        underground = False
+        free_lots = False
+        disabled = True
 
-        wanted_parking = Features(free_lots, paid, guarded, p_and_r, underground, disabled)
+        wanted_parking = Features(area, free_lots, paid, guarded, p_and_r, underground, disabled)
         # print(f"{wanted_parking.free_lots} {wanted_parking.paid} {wanted_parking.guarded} {wanted_parking.p_and_r}"
         #       f" {wanted_parking.underground}")
 
@@ -40,20 +51,20 @@ class Features:
 class MainSolver:
 
     @staticmethod
-    def solve(user_parking: Features):
+    def solve(user_parking: Features, areas: np.array):
         max_weight = 0
         wcnf = WCNF()
 
         if user_parking.paid:
             wcnf.append([1], weight=30)
-            wcnf.append([5], weight=20)
+            wcnf.append([5], weight=10)
         else:
             wcnf.append([-1], weight=40)
             wcnf.append([-2], weight=10)
 
         if user_parking.guarded:
             wcnf.append([2], weight=40)
-            wcnf.append([1], weight=20)
+            wcnf.append([1], weight=40)
         else:
             wcnf.append([-1], weight=10)
             wcnf.append([-2], weight=20)
@@ -74,20 +85,37 @@ class MainSolver:
             wcnf.append([5], weight=30)
             wcnf.append([1, 4], weight=30)
         else:
-            wcnf.append([-5], weight=10)
+            wcnf.append([-5], weight=30)
 
         if user_parking.disabled:
             wcnf.append([5, 6], weight=45)
         else:
-            wcnf.append([-6], weight=10)
-            wcnf.append([-5], weight=10)
+            wcnf.append([-6], weight=15)
+            wcnf.append([-5], weight=15)
+
+        area = areas[user_parking.area]
+        area_weight = 1000 // (10 * area.in_need + 5 * area.attractiveness)
+        wcnf.append([-7], weight=area_weight)
+
+        all_areas = [7]
+        for i, num in enumerate(area.neighbours):
+            a = areas[num]
+            all_areas.append(8 + i)
+            area_weight = 1000 // (10 * a.in_need + 5 * a.attractiveness)
+            wcnf.append([-(8 + i)], weight=area_weight)
+
+        wcnf.append(all_areas)
+
+        for i in range(len(wcnf.soft)):
+            print(f"{wcnf.soft[i]}: {wcnf.wght[i]}")
 
         with RC2(wcnf) as rc2:
             print(rc2.compute())
 
 
 if __name__ == '__main__':
-    # Generator.generate_areas(9, 8, 100)
-    MainSolver.solve(Features.get_info())
-    # .MainSolver.solve(Features.get_info())
+    areas, parking_lots = Generator.generate_areas(5, 5, 5)
+    for area in areas:
+        print(area)
+    MainSolver.solve(Features.get_info(), areas)
 

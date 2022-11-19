@@ -68,9 +68,11 @@ if __name__ == '__main__':
     # solve_weighted_max_sat(unsatisfying_clauses, weights_1)
     # solve_max_sat(satisfying_clauses)
 
-    areas, parking_lots = Generator.generate_areas(5, 8, 5*8*3)
+    areas, parking_lots = Generator.generate_areas(5, 8, 10)
     for area in areas:
         print(area)
     print()
     for parking_lot in parking_lots:
         print(parking_lot)
+    Generator.save_to_file(parking_lots, areas)
+
