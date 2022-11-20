@@ -115,24 +115,35 @@ class MainSolver:
             # print(rc2.compute())
             print(f"result {result}")
 
-        MainSolver.choose_parking(areas, result, user_parking)
+        return MainSolver.choose_area(areas, result, user_parking)
 
     @staticmethod
-    def choose_parking(areas: np.array, solver_result: np.array, user_parking: Features):
-        parking_weights = []
+    def choose_area(areas: np.array, solver_result: np.array, user_parking: Features):
         user_area = user_parking.area
-        area = [int(areas[user_area].number)]
+        areas_ = [int(areas[user_area].number)]
+        lots_areas = {}
+
+        for p in areas[user_area].parking_lots:
+            lots_areas[p] = int(areas[user_area].number)
 
         # actual areas' numbers
         for n in areas[user_area].neighbours:
-            area.append(n)
+            areas_.append(n)
+            for p in areas[n].parking_lots:
+                lots_areas[p] = n
 
         # indexes for areas in solver: 7 - 13
         for i in range(6, 13):
             if solver_result[i] > 0:
                 # best_area = solver_result[i]
-                best_area = area[i - 6]  # corresponding area number
-        print(f"best: {best_area} \n areas: {area}")
+                best_area = areas_[i - 6]  # corresponding areas_ number
+        print(f"best: {best_area}\n areas: {areas_}")
+        print(f"items {lots_areas.items()}")
+
+        return areas_
+
+    # @staticmethod
+    # def choose_parking(best_area: int, neighbours: np.array, lots: np.array):
 
 
 
@@ -140,4 +151,6 @@ if __name__ == '__main__':
     areas, parking_lots = Generator.generate_areas(5, 5, 5)
     # for area in areas:
     #     print(area)
-    MainSolver.solve(Features.get_info(), areas)
+    curr_areas = MainSolver.solve(Features.get_info(), areas)
+    # MainSolver.choose_parking(res_area, area_neighb, parking_lots)
+
