@@ -1,4 +1,5 @@
 import numpy as np
+import operator
 
 from DataModel.Generator import Generator
 from pysat.examples.rc2 import RC2
@@ -121,6 +122,7 @@ class MainSolver:
     def choose_area(areas: np.array, solver_result: np.array, user_parking: Features):
         user_area = user_parking.area
         areas_ = [int(areas[user_area].number)]
+        chosen_features = []
         lots_areas = {}
         lots_weights = {}
 
@@ -135,27 +137,50 @@ class MainSolver:
                 lots_areas[p] = n
                 lots_weights[p] = 0
 
-        # indexes for areas in solver: 7 - 13
+        # indexes of features in solver: 1 - 6
+        for i in range(0, 6):
+            if solver_result[i] > 0:
+                chosen_features.append(True)
+            else:
+                chosen_features.append(False)
+
+        # indexes of areas in solver: 7 - 13
         for i in range(6, 13):
             if solver_result[i] > 0:
                 # best_area = solver_result[i]
                 best_area = areas_[i - 6]  # corresponding areas_ number
 
-        print(f"best: {best_area}\n areas: {areas_}")
+        print(f"best: {best_area}\nareas: {areas_}")
         print(f"items {lots_areas.items()}")
-        print(f"weights {lots_weights.items()}")
+        print(f"features {chosen_features}")
 
-        return areas_
+        return lots_weights, chosen_features
 
-    # @staticmethod
-    # def choose_parking(best_area: int, neighbours: np.array, lots: np.array):
+    @staticmethod
+    def choose_parking(weights: dict, features: list, lots: np.array):
+        for lot_id in weights.keys():
+            curr_lot = lots[lot_id]
+            if features[0] == curr_lot.paid:
+                weights[lot_id] += 5
+            if features[1] == curr_lot.guarded:
+                weights[lot_id] += 5
+            if features[2] == curr_lot.p_and_r:
+                weights[lot_id] += 5
+            if features[3] == curr_lot.underground:
+                weights[lot_id] += 5
+            if features[4] is True and curr_lot.free_lots >= 10:
+                weights[lot_id] += 5
+            if features[5] == curr_lot.disabled:
+                weights[lot_id] += 5
 
+        sorted_w = list(sorted(weights.items(), key=operator.itemgetter(1), reverse=True))
+        for i in range(3):
+            print(f"Parking ID: {sorted_w[i][0]}, score: {sorted_w[i][1]}")
 
 
 if __name__ == '__main__':
     areas, parking_lots = Generator.generate_areas(5, 5, 5)
     # for area in areas:
     #     print(area)
-    curr_areas = MainSolver.solve(Features.get_info(), areas)
-    # MainSolver.choose_parking(res_area, area_neighb, parking_lots)
-
+    w, f = MainSolver.solve(Features.get_info(), areas)
+    MainSolver.choose_parking(w, f, parking_lots)
