@@ -122,23 +122,28 @@ class MainSolver:
         user_area = user_parking.area
         areas_ = [int(areas[user_area].number)]
         lots_areas = {}
+        lots_weights = {}
 
         for p in areas[user_area].parking_lots:
             lots_areas[p] = int(areas[user_area].number)
+            lots_weights[p] = 20
 
         # actual areas' numbers
         for n in areas[user_area].neighbours:
             areas_.append(n)
             for p in areas[n].parking_lots:
                 lots_areas[p] = n
+                lots_weights[p] = 0
 
         # indexes for areas in solver: 7 - 13
         for i in range(6, 13):
             if solver_result[i] > 0:
                 # best_area = solver_result[i]
                 best_area = areas_[i - 6]  # corresponding areas_ number
+
         print(f"best: {best_area}\n areas: {areas_}")
         print(f"items {lots_areas.items()}")
+        print(f"weights {lots_weights.items()}")
 
         return areas_
 
