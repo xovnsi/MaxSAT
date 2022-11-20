@@ -58,14 +58,15 @@ class Generator:
         p_and_r = np.random.randint(2, size=(num,), dtype=np.bool)
         underground = np.random.randint(2, size=(num,), dtype=np.bool)
         parking_lots = np.empty((num,), dtype=np.dtype(ParkingLot))
-        disabled = np.empty((num,), dtype=np.dtype(ParkingLot))
+        # disabled = np.empty((num,), dtype=np.dtype(ParkingLot))
+        disabled = np.random.randint(2, size=(num,), dtype=np.bool)
 
         for i in range(num):
             if guarded[i] == 0:
                 paid[i] = 0
 
         for i in range(num):
-            parking_lot = ParkingLot(i, free_lots[i], paid[i], guarded[i], p_and_r[i], underground[i], disabled)
+            parking_lot = ParkingLot(i, free_lots[i], paid[i], guarded[i], p_and_r[i], underground[i], disabled[i])
             parking_lots[i] = parking_lot
 
         return parking_lots
