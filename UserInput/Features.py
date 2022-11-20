@@ -1,8 +1,6 @@
 import numpy as np
 
-from DataModel.ParkingLot import ParkingLot
 from DataModel.Generator import Generator
-# from UserInput.MainSolver import MainSolver
 from pysat.examples.rc2 import RC2
 from pysat.formula import WCNF
 
@@ -15,8 +13,9 @@ class Features:
     p_and_r: bool
     underground: bool
     disabled: bool
+    the_best_area: int
 
-    def __init__(self, area,  free_lots, paid, guarded, p_and_r, underground, disabled):
+    def __init__(self, area, free_lots, paid, guarded, p_and_r, underground, disabled):
         self.area = area
         self.free_lots = free_lots
         self.paid = paid
@@ -52,9 +51,9 @@ class MainSolver:
 
     @staticmethod
     def solve(user_parking: Features, areas: np.array):
-        max_weight = 0
         wcnf = WCNF()
 
+        # feature numbers 1 - 6
         if user_parking.paid:
             wcnf.append([1], weight=30)
             wcnf.append([5], weight=10)
@@ -93,10 +92,12 @@ class MainSolver:
             wcnf.append([-6], weight=15)
             wcnf.append([-5], weight=15)
 
+        # area chosen by user
         area = areas[user_parking.area]
         area_weight = 1000 // (10 * area.in_need + 5 * area.attractiveness)
         wcnf.append([-7], weight=area_weight)
 
+        # area numbers: 7 - 13
         all_areas = [7]
         for i, num in enumerate(area.neighbours):
             a = areas[num]
@@ -110,12 +111,33 @@ class MainSolver:
             print(f"{wcnf.soft[i]}: {wcnf.wght[i]}")
 
         with RC2(wcnf) as rc2:
-            print(rc2.compute())
+            result = np.array(rc2.compute())
+            # print(rc2.compute())
+            print(f"result {result}")
+
+        MainSolver.choose_parking(areas, result, user_parking)
+
+    @staticmethod
+    def choose_parking(areas: np.array, solver_result: np.array, user_parking: Features):
+        parking_weights = []
+        user_area = user_parking.area
+        area = [int(areas[user_area].number)]
+
+        # actual areas' numbers
+        for n in areas[user_area].neighbours:
+            area.append(n)
+
+        # indexes for areas in solver: 7 - 13
+        for i in range(6, 13):
+            if solver_result[i] > 0:
+                # best_area = solver_result[i]
+                best_area = area[i - 6]  # corresponding area number
+        print(f"best: {best_area} \n areas: {area}")
+
 
 
 if __name__ == '__main__':
     areas, parking_lots = Generator.generate_areas(5, 5, 5)
-    for area in areas:
-        print(area)
+    # for area in areas:
+    #     print(area)
     MainSolver.solve(Features.get_info(), areas)
-
