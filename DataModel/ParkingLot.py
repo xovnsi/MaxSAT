@@ -10,6 +10,7 @@ class ParkingLot:
     p_and_r: bool
     underground: bool
     disabled: bool
+    area_num: int
 
     def __init__(self, number, free_lots, paid, guarded, p_and_r, underground, disabled):
 
@@ -20,6 +21,9 @@ class ParkingLot:
         self.p_and_r = p_and_r
         self.underground = underground
         self.disabled = disabled
+
+    def set_area(self, area_num: int):
+        self.area_num = area_num
 
     def __str__(self):
 

@@ -36,15 +36,12 @@ class Features:
         area = 17
         paid = False
         guarded = True
-        p_and_r = False
+        p_and_r = True
         underground = False
         free_lots = False
         disabled = True
 
         wanted_parking = Features(area, free_lots, paid, guarded, p_and_r, underground, disabled)
-        # print(f"{wanted_parking.free_lots} {wanted_parking.paid} {wanted_parking.guarded} {wanted_parking.p_and_r}"
-        #       f" {wanted_parking.underground}")
-
         return wanted_parking
 
 
@@ -113,7 +110,6 @@ class MainSolver:
 
         with RC2(wcnf) as rc2:
             result = np.array(rc2.compute())
-            # print(rc2.compute())
             print(f"result {result}")
 
         return MainSolver.choose_area(areas, result, user_parking)
@@ -150,9 +146,11 @@ class MainSolver:
                 # best_area = solver_result[i]
                 best_area = areas_[i - 6]  # corresponding areas_ number
 
-        print(f"best: {best_area}\nareas: {areas_}")
-        print(f"items {lots_areas.items()}")
-        print(f"features {chosen_features}")
+        print(f"Best area: {best_area}\nAvailable areas: {areas_}")
+        features = ['Paid', "Guarded", "P&R", "Underground", "At least 10 free lots", "For disabled"]
+        for i in range(6):
+            print(f"{features[i]:24}: {chosen_features[i]}")
+        print()
 
         return lots_weights, chosen_features
 
@@ -174,8 +172,15 @@ class MainSolver:
                 weights[lot_id] += 5
 
         sorted_w = list(sorted(weights.items(), key=operator.itemgetter(1), reverse=True))
+        print("Best parking lots: ")
         for i in range(3):
-            print(f"Parking ID: {sorted_w[i][0]}, score: {sorted_w[i][1]}")
+            parking_id = sorted_w[i][0]
+            parking = lots[parking_id]
+            print(f"Parking ID: {parking_id}, area: {parking.area_num}, score: {sorted_w[i][1]}")
+            print(f"Paid: {parking.paid}, Guarded: {parking.guarded}, P&R: {parking.p_and_r},"
+                  f" Underground: {parking.underground}, For Disabled: {parking.disabled}, "
+                  f"Free lots: {parking.free_lots}")
+            print()
 
 
 if __name__ == '__main__':

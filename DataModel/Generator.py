@@ -43,6 +43,7 @@ class Generator:
 
         for parking_lot in parking_lots:
             random_area = np.random.randint(0, x*y, dtype=np.int16)
+            parking_lot.set_area(areas[random_area].number)
             areas[random_area].parking_lots = np.append(areas[random_area].parking_lots, parking_lot.number)
 
         Generator.save_to_file(parking_lots, areas)
