@@ -101,8 +101,9 @@ class MainSolver:
             a = areas[num]
             all_areas.append(8 + i)
             area_weight = 1000 // (10 * a.in_need + 5 * a.attractiveness)
-            wcnf.append([-(8 + i)], weight=area_weight)
+            wcnf.append([-(8 + i)], weight=area_weight)  # only one area must be chosen
 
+        # hard clause -> one area must be chosen
         wcnf.append(all_areas)
 
         for i in range(len(wcnf.soft)):
