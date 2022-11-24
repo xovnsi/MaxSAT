@@ -125,7 +125,7 @@ class MainSolver:
 
         for p in areas[user_area].parking_lots:
             lots_areas[p] = int(areas[user_area].number)
-            lots_weights[p] = 20
+            lots_weights[p] = 20  # parking in chosen area -> 20pkt added to its weight
 
         # actual areas' numbers
         for n in areas[user_area].neighbours:
@@ -157,7 +157,7 @@ class MainSolver:
 
     @staticmethod
     def choose_parking(weights: dict, features: list, lots: np.array):
-        for lot_id in weights.keys():
+        for lot_id in weights.keys():  # weight points for each wanted feature
             curr_lot = lots[lot_id]
             if features[0] == curr_lot.paid:
                 weights[lot_id] += 5
