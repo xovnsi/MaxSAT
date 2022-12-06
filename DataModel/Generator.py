@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 from DataModel.Area import Area
 from DataModel.ParkingLot import ParkingLot
 
@@ -75,13 +76,27 @@ class Generator:
     def save_to_file(lots_: np.array((int,), dtype=np.dtype(ParkingLot)),
                      areas_: np.array((int,), dtype=np.dtype(Area))):
 
-        f = open("../Data/Lots.txt", "w")
-        for lot in lots_:
-            f.write(str(lot) + '\n')
-        f.close()
+        # f = open("../Data/Lots.txt", "w")
+        # for lot in lots_:
+        #     f.write(str(lot) + '\n')
+        # f.close()
+        #
+        # f = open("../Data/Areas.txt", "w")
+        # for a in areas_:
+        #     f.write(str(a) + '\n')
+        # f.close()
 
-        f = open("../Data/Areas.txt", "w")
-        for a in areas_:
-            f.write(str(a) + '\n')
-        f.close()
+        with open("../Data/Areas.txt", "wb") as f:
+            pickle.dump(areas_, f)
 
+        with open("../Data/Lots.txt", "wb") as f:
+            pickle.dump(lots_, f)
+
+    @staticmethod
+    def read_file():
+        with open("../Data/Areas.txt", "rb") as f:
+            areas_ = pickle.load(f)
+        with open("../Data/Lots.txt", "rb") as f:
+            lots_ = pickle.load(f)
+
+        return areas_, lots_

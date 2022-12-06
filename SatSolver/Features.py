@@ -185,7 +185,9 @@ class MainSolver:
 
 
 if __name__ == '__main__':
-    areas, parking_lots = Generator.generate_areas(5, 5, 5)
+    # areas, parking_lots = Generator.generate_areas(5, 5, 5)
+    # Generator.generate_areas(5, 5, 5)
+    areas, parking_lots = Generator.read_file()
     # for area in areas:
     #     print(area)
     w, f = MainSolver.solve(Features.get_info(), areas)
