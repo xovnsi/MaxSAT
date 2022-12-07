@@ -59,20 +59,8 @@ def solve_weighted_max_sat(clauses, weights):
 
 
 if __name__ == '__main__':
-    # solve_sat(unsatisfying_clauses)
-    # solve_sat(satisfying_clauses)
 
-    # solve_max_sat(unsatisfying_clauses)
-    # solve_max_sat(satisfying_clauses)
+    # areas, parking_lots = Generator.generate_areas(7, 7, 9)
 
-    # solve_weighted_max_sat(unsatisfying_clauses, weights_1)
-    # solve_max_sat(satisfying_clauses)
-
-    areas, parking_lots = Generator.generate_areas(5, 8, 10)
-    for area in areas:
-        print(area)
-    print()
-    for parking_lot in parking_lots:
-        print(parking_lot)
-    Generator.save_to_file(parking_lots, areas)
+    areas, parking_lots = Generator.read_file("Krakow")
 

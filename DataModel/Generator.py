@@ -47,8 +47,6 @@ class Generator:
             parking_lot.set_area(areas[random_area].number)
             areas[random_area].parking_lots = np.append(areas[random_area].parking_lots, parking_lot.number)
 
-        Generator.save_to_file(parking_lots, areas)
-
         return areas, parking_lots
 
     @staticmethod
@@ -74,29 +72,20 @@ class Generator:
 
     @staticmethod
     def save_to_file(lots_: np.array((int,), dtype=np.dtype(ParkingLot)),
-                     areas_: np.array((int,), dtype=np.dtype(Area))):
+                     areas_: np.array((int,), dtype=np.dtype(Area)),
+                     city: str):
 
-        # f = open("../Data/Lots.txt", "w")
-        # for lot in lots_:
-        #     f.write(str(lot) + '\n')
-        # f.close()
-        #
-        # f = open("../Data/Areas.txt", "w")
-        # for a in areas_:
-        #     f.write(str(a) + '\n')
-        # f.close()
-
-        with open("../Data/Areas.txt", "wb") as f:
+        with open(f"../Data/{city}Areas.pickle", "wb") as f:
             pickle.dump(areas_, f)
 
-        with open("../Data/Lots.txt", "wb") as f:
+        with open(f"../Data/{city}Lots.pickle", "wb") as f:
             pickle.dump(lots_, f)
 
     @staticmethod
-    def read_file():
-        with open("../Data/Areas.txt", "rb") as f:
+    def read_file(city: str):
+        with open(f"../Data/{city}Areas.pickle", "rb") as f:
             areas_ = pickle.load(f)
-        with open("../Data/Lots.txt", "rb") as f:
+        with open(f"../Data/{city}Lots.pickle", "rb") as f:
             lots_ = pickle.load(f)
 
         return areas_, lots_

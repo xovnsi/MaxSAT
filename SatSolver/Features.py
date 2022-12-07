@@ -26,20 +26,20 @@ class Features:
         self.disabled = disabled
 
     @staticmethod
-    def get_info():
+    def get_info(area, paid, guarded, p_and_r, underground, free_lots, disabled):
         # free_lots = input("Do you want a parking with at least 10 free lots?")
         # paid = input("Do you want a paid parking?")
         # guarded = input("Do you want a guarded parking?")
         # p_and_r = input("Do you want a park&ride parking?")
         # underground = input("Do you want an underground parking?")
         # disabled = input("Do you want a disabled parking space?")
-        area = 17
-        paid = False
-        guarded = True
-        p_and_r = True
-        underground = False
-        free_lots = False
-        disabled = True
+        # area = 17
+        # paid = False
+        # guarded = True
+        # p_and_r = True
+        # underground = False
+        # free_lots = False
+        # disabled = True
 
         wanted_parking = Features(area, free_lots, paid, guarded, p_and_r, underground, disabled)
         return wanted_parking
@@ -159,6 +159,9 @@ class MainSolver:
     def choose_parking(weights: dict, features: list, lots: np.array):
         for lot_id in weights.keys():  # weight points for each wanted feature
             curr_lot = lots[lot_id]
+            if curr_lot.free_lots == 0:
+                weights[lot_id] = 0
+                break
             if features[0] == curr_lot.paid:
                 weights[lot_id] += 5
             if features[1] == curr_lot.guarded:
@@ -185,10 +188,7 @@ class MainSolver:
 
 
 if __name__ == '__main__':
-    # areas, parking_lots = Generator.generate_areas(5, 5, 5)
-    # Generator.generate_areas(5, 5, 5)
-    areas, parking_lots = Generator.read_file()
-    # for area in areas:
-    #     print(area)
-    w, f = MainSolver.solve(Features.get_info(), areas)
+    areas, parking_lots = Generator.read_file("Krakow")
+    wanted_parking = Features.get_info(area=24, paid=False, guarded=True, p_and_r=True, underground=False, free_lots=False, disabled=True)
+    w, f = MainSolver.solve(wanted_parking, areas)
     MainSolver.choose_parking(w, f, parking_lots)
