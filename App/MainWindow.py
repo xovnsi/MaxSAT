@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QCheckBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QCheckBox, QMessageBox
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import Slot
 
@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
 
         self.window = QWidget()
         self.result = None
+        self.areas = None
         self.window.submitButton = QPushButton()
         self.window.paid = QCheckBox()
         self.city = None
@@ -28,28 +29,41 @@ class MainWindow(QMainWindow):
 
         self.show()
 
-
     @Slot()
     def submit_push(self):
-        area = int(self.window.area.text())
+        try:
+            area = int(self.window.area.text())
+        except:
+            self.warning()
+            return
         paid = self.window.paid.isChecked()
         disabled = self.window.disabled.isChecked()
         underground = self.window.underground.isChecked()
         pr = self.window.pr.isChecked()
         guarded = self.window.guarded.isChecked()
         free_lots = self.window.freeLots.isChecked()
-        best_lots = MainSolver.run(self.city, area, paid, guarded, pr, underground, free_lots, disabled)
-        self.result = ResultWindow()
-        self.result.fill_data(best_lots)
-        self.result.show()
-        self.close()
+        if area < 1 or area > self.areas:
+            self.warning()
+        else:
+            best_lots = MainSolver.run(self.city, area, paid, guarded, pr, underground, free_lots, disabled)
+            self.result = ResultWindow()
+            self.result.fill_data(best_lots)
+            self.result.show()
+            self.close()
+
+    def warning(self):
+        message_box = QMessageBox()
+        message_box.setWindowTitle("Warninig")
+        message_box.setIcon(QMessageBox.Warning)
+        message_box.setText("Wrong area number!")
+        message_box.exec_()
 
     @Slot()
     def choose_city(self):
         self.city = self.sender().text()
         self.window.city.setText(str(self.city))
-        areas = MainSolver.get_num_of_areas(self.city)
-        self.window.label.setText(f"Preferred area number (from 1 to {areas})")
+        self.areas = MainSolver.get_num_of_areas(self.city)
+        self.window.label.setText(f"Preferred area number (from 1 to {self.areas})")
 
         self.window.area.setEnabled(True)
         self.window.paid.setEnabled(True)
@@ -118,8 +132,6 @@ class ResultWindow(QMainWindow):
         self.window.underground_3.setChecked(bool(parking.underground))
         self.window.disabled_3.setChecked(bool(parking.disabled))
         self.window.lots_3.setText(str(parking.free_lots))
-
-
 
 
 if __name__ == "__main__":
