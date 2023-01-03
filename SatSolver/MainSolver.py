@@ -176,6 +176,17 @@ class MainSolver:
                 weights[lot_id] += 5
 
         sorted_w = list(sorted(weights.items(), key=operator.itemgetter(1), reverse=True))
+
+        for i in range(10):
+            for j in range(10 - i):
+                if sorted_w[j][1] == sorted_w[j + 1][1]:
+                    parking_curr = lots[sorted_w[j][0]]
+                    parking_next = lots[sorted_w[j + 1][0]]
+                    if parking_curr.free_lots < parking_next.free_lots:
+                        temp = sorted_w[j]
+                        sorted_w[j] = sorted_w[j + 1]
+                        sorted_w[j + 1] = temp
+
         print("Best parking lots: ")
         for i in range(3):
             parking_id = sorted_w[i][0]
@@ -196,7 +207,7 @@ class MainSolver:
 
 
 if __name__ == '__main__':
-    areas, parking_lots = Generator.read_file("Krakow")
+    areas, parking_lots = Generator.read_file("Wrocław")
     wanted_parking = Features.get_info(area=24, paid=False, guarded=True, p_and_r=True, underground=False, free_lots=False, disabled=True)
     w, f = MainSolver.solve(wanted_parking, areas)
     MainSolver.choose_parking(w, f, parking_lots)
