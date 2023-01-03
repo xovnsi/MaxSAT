@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):
         self.city = None
 
         self.loader = QUiLoader()
+        self.setWindowTitle('Parking preferences')
         self.window = self.loader.load("InputWindow.ui", self)
 
         self.window.submitButton.clicked.connect(self.submit_push)
@@ -63,9 +64,17 @@ class ResultWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.loader = QUiLoader()
-        # self.main = MainWindow()
+        self.setWindowTitle('Results')
+        self.main = None
         self.window = self.loader.load("ResultWindow.ui", self)
+        self.window.backButton.clicked.connect(self.go_to_main)
         self.show()
+
+    @Slot()
+    def go_to_main(self):
+        self.main = MainWindow()
+        self.main.show()
+        self.close()
 
     def fill_data(self, best_lots):
         parking_id = best_lots[0][0]
