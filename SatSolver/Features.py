@@ -186,6 +186,14 @@ class MainSolver:
                   f"Free lots: {parking.free_lots}")
             print()
 
+    @staticmethod
+    def run(area, paid, guarded, p_and_r, underground, free_lots, disabled):
+        areas, parking_lots = Generator.read_file("Krakow")
+        wanted_parking = Features.get_info(area=area, paid=paid, guarded=guarded, p_and_r=p_and_r, underground=underground,
+                                           free_lots=free_lots, disabled=disabled)
+        w, f = MainSolver.solve(wanted_parking, areas)
+        MainSolver.choose_parking(w, f, parking_lots)
+
 
 if __name__ == '__main__':
     areas, parking_lots = Generator.read_file("Krakow")
