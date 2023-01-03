@@ -188,23 +188,32 @@ class MainSolver:
                         sorted_w[j + 1] = temp
 
         print("Best parking lots: ")
+        best_lots = []
         for i in range(3):
             parking_id = sorted_w[i][0]
+            score = sorted_w[i][1]
             parking = lots[parking_id]
-            print(f"Parking ID: {parking_id}, area: {parking.area_num}, score: {sorted_w[i][1]}")
+            best_lots.append((parking_id, parking, score))
+            print(f"Parking ID: {parking_id}, area: {parking.area_num}, score: {score}")
             print(f"Paid: {parking.paid}, Guarded: {parking.guarded}, P&R: {parking.p_and_r},"
                   f" Underground: {parking.underground}, For Disabled: {parking.disabled}, "
                   f"Free lots: {parking.free_lots}")
             print()
 
+        return best_lots
+
     @staticmethod
-    def run(area, paid, guarded, p_and_r, underground, free_lots, disabled):
-        areas, parking_lots = Generator.read_file("Krakow")
+    def run(city, area, paid, guarded, p_and_r, underground, free_lots, disabled):
+        areas, parking_lots = Generator.read_file(city)
         wanted_parking = Features.get_info(area=area, paid=paid, guarded=guarded, p_and_r=p_and_r, underground=underground,
                                            free_lots=free_lots, disabled=disabled)
         w, f = MainSolver.solve(wanted_parking, areas)
-        MainSolver.choose_parking(w, f, parking_lots)
+        return MainSolver.choose_parking(w, f, parking_lots)
 
+    @staticmethod
+    def get_num_of_areas(city):
+        areas, parking_lots = Generator.read_file(city)
+        return len(areas)
 
 if __name__ == '__main__':
     areas, parking_lots = Generator.read_file("Wrocław")
