@@ -138,9 +138,3 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = MainWindow()
     sys.exit(app.exec())
-
-# loader = QUiLoader()
-#
-# window = loader.load("InputWindow.ui", None)
-# window.show()
-# app.exec()

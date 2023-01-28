@@ -49,16 +49,16 @@ class Area:
         neighbours = ""
         for n in self.neighbours:
             if n != -1:
-                neighbours += " "
                 neighbours += str(n)
+                neighbours += " "
 
         parking_lots = ""
         for p in self.parking_lots:
             parking_lots += str(p)
             parking_lots += " "
 
-        return f"{self.number = }, {self.x = }, {self.y = }, {self.attractiveness = }, {self.in_need = }, " \
-               f"neighbours ={neighbours}, parking lots = {parking_lots}"
+        return f"Area {self.number:2}: attractiveness={self.attractiveness:2}, in_need={self.in_need:2}, " \
+               f"neighbours= {neighbours}, parking lots= {parking_lots}"
 
     def get_weight(self, is_chosen=False):
         weight = self.in_need * 10 + self.attractiveness * 5

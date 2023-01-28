@@ -48,7 +48,7 @@ class Features:
 class MainSolver:
 
     @staticmethod
-    def solve(user_parking: Features, areas: np.array):
+    def solve(user_parking: Features, areas: np.array, parking_lots: np.array):
         wcnf = WCNF()
 
         # feature numbers 1 - 6
@@ -113,10 +113,10 @@ class MainSolver:
             result = np.array(rc2.compute())
             print(f"result {result}")
 
-        return MainSolver.choose_area(areas, result, user_parking)
+        return MainSolver.choose_area(areas, result, user_parking, parking_lots)
 
     @staticmethod
-    def choose_area(areas: np.array, solver_result: np.array, user_parking: Features):
+    def choose_area(areas: np.array, solver_result: np.array, user_parking: Features, parking_lots: np.array):
         user_area = user_parking.area
         areas_ = [int(areas[user_area].number)]
         chosen_features = []
@@ -147,11 +147,24 @@ class MainSolver:
                 # best_area = solver_result[i]
                 best_area = areas_[i - 6]  # corresponding areas_ number
 
-        print(f"Best area: {best_area}\nAvailable areas: {areas_}")
+        print(f"Available areas: {areas_}\n")
+        for area in areas_:
+            print(areas[area])
+        print()
+
+        for area in areas_:
+            print(f"Area {area} - parking lots:")
+            for p in areas[area].parking_lots:
+                print(str(parking_lots[p]))
+            print()
+
+        print(f"Best area chosen by solver: {best_area}")
+        print("Its properties:")
         features = ['Paid', "Guarded", "P&R", "Underground", "At least 10 free lots", "For disabled"]
         for i in range(6):
             print(f"{features[i]:24}: {chosen_features[i]}")
         print()
+
 
         return lots_weights, chosen_features
 
@@ -207,7 +220,7 @@ class MainSolver:
         areas, parking_lots = Generator.read_file(city)
         wanted_parking = Features.get_info(area=area, paid=paid, guarded=guarded, p_and_r=p_and_r, underground=underground,
                                            free_lots=free_lots, disabled=disabled)
-        w, f = MainSolver.solve(wanted_parking, areas)
+        w, f = MainSolver.solve(wanted_parking, areas, parking_lots)
         return MainSolver.choose_parking(w, f, parking_lots)
 
     @staticmethod
@@ -215,8 +228,8 @@ class MainSolver:
         areas, parking_lots = Generator.read_file(city)
         return len(areas)
 
-if __name__ == '__main__':
-    areas, parking_lots = Generator.read_file("Wrocław")
-    wanted_parking = Features.get_info(area=24, paid=False, guarded=True, p_and_r=True, underground=False, free_lots=False, disabled=True)
-    w, f = MainSolver.solve(wanted_parking, areas)
-    MainSolver.choose_parking(w, f, parking_lots)
+# if __name__ == '__main__':
+#     areas, parking_lots = Generator.read_file("Wrocław")
+#     wanted_parking = Features.get_info(area=24, paid=False, guarded=True, p_and_r=True, underground=False, free_lots=False, disabled=True)
+#     w, f = MainSolver.solve(wanted_parking, areas)
+#     MainSolver.choose_parking(w, f, parking_lots)

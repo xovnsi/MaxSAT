@@ -27,7 +27,7 @@ class ParkingLot:
 
     def __str__(self):
 
-        return f"{self.number = }, {self.free_lots = }, {self.paid = }, {self.guarded = }, {self.p_and_r = }, " \
-               f"{self.underground = }, {self.disabled = }"
+        return f"number={self.number:3}, free_lots={self.free_lots:3}, paid={self.paid:1}, guarded={self.guarded:1}, " \
+               f"p_and_r={self.p_and_r:1}, underground={self.underground:1}, disabled={self.disabled:1}"
 
 
