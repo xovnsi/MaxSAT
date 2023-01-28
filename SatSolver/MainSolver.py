@@ -105,7 +105,7 @@ class MainSolver:
 
         # hard clause -> one area must be chosen
         wcnf.append(all_areas)
-
+        print("~~~~~~~~~~Clauses with corresponding weights~~~~~~~~~~")
         for i in range(len(wcnf.soft)):
             print(f"{wcnf.soft[i]}: {wcnf.wght[i]}")
 
@@ -148,17 +148,24 @@ class MainSolver:
                 best_area = areas_[i - 6]  # corresponding areas_ number
 
         print(f"Available areas: {areas_}\n")
+        print("~~~~~~~~~~Chosen area and its neighbours~~~~~~~~~~")
         for area in areas_:
+            # area doesn't have 7 neighbours
+            if area == -1:
+                continue
             print(areas[area])
         print()
 
         for area in areas_:
-            print(f"Area {area} - parking lots:")
+            # area doesn't have 7 neighbours
+            if area == -1:
+                continue
+            print(f"~~~~~~~~~~Parking lots of area {area}:~~~~~~~~~~")
             for p in areas[area].parking_lots:
                 print(str(parking_lots[p]))
             print()
 
-        print(f"Best area chosen by solver: {best_area}")
+        print(f"~~~~~~~~~~Best area chosen by solver: {best_area}~~~~~~~~~~")
         print("Its properties:")
         features = ['Paid', "Guarded", "P&R", "Underground", "At least 10 free lots", "For disabled"]
         for i in range(6):
